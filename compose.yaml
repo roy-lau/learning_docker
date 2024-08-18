@@ -1,0 +1,17 @@
+name: leaning-docker-compose
+
+include:
+  # - sql/mysql/docker.yaml
+  # - sql/MongoDB/docker.yaml
+  # - sql/redis/docker.yaml
+  - openresty/docker.yaml
+  # - nginx/docker.yaml
+
+
+# services:
+#   web:
+#     build:
+#       context: nginx
+#       # target: development
+#     ports:
+#       - 8080:80

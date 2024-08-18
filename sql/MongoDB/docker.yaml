@@ -1,0 +1,29 @@
+# https://hub.docker.com/_/mongo
+# https://hub.docker.com/_/mongo-express
+
+# https://github.com/docker-library/mongo
+# https://github.com/mongo-express/mongo-express-docker
+
+name: my-mongo
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: toor
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 9000:8081 # 本地:镜像
+    command: echo "执行脚本, 运行的项目名为： ${COMPOSE_PROJECT_NAME}"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: toor
+      ME_CONFIG_MONGODB_URL: mongodb://root:toor@mongo:27017/
+      ME_CONFIG_BASICAUTH: false

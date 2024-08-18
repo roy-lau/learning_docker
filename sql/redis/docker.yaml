@@ -1,0 +1,20 @@
+# https://hub.docker.com/_/redis
+# https://github.com/redis/docker-library-redis
+
+services:
+  my-redis:
+    image: redis:latest
+    ports: 
+      - 6379:6379
+
+#     configs:
+#       - source: my_config
+#         target: /redis_config
+#         uid: "103"
+#         gid: "103"
+#         mode: 0440
+# configs:
+#   my_config:
+#     external: true
+#   my_other_config:
+#     external: true
