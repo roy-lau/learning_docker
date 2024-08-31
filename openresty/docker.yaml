@@ -1,6 +1,7 @@
 # https://hub.docker.com/r/openresty/openresty
 # https://github.com/openresty/docker-openresty
 # openresty 最佳实践： https://moonbingbing.gitbooks.io/openresty-best-practices/content/
+# https://github.com/orgs/openresty/repositories?type=all
 
 
 services:
@@ -8,13 +9,13 @@ services:
     image: openresty/openresty:alpine
     restart: always
     ports:
-      - 80:80
+      - 80:8080
     # networks:
     #   - network1
     volumes:
       - ./conf.d:/etc/nginx/conf.d # 本地:镜像
       - ./nginx.conf:/etc/nginx/nginx.conf # 本地:镜像
-      - ./lua_script:/usr/local/openresty/lua_script # 本地:镜像
+      - ./lua_script:/usr/local/openresty/nginx/lua_script # 本地:镜像
       - ./html:/usr/local/openresty/nginx/html # 本地:镜像
 
     # 健康检查

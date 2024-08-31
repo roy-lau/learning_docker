@@ -1,4 +1,4 @@
 FROM nginx:latest
-PORTS 80:80
+PORTS 80:8080
 # RUN rm /etc/nginx/conf.d/default.conf
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
