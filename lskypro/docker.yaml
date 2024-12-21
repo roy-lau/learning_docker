@@ -1,0 +1,10 @@
+# https://github.com/HalcyonAzure/lsky-pro-docker
+
+services:
+ lskypro:
+    image: halcyonazure/lsky-pro-docker:latest
+    ports:
+      - 9080:9080
+    volumes:
+      - ./html:/var/www/html
+    restart: unless-stopped

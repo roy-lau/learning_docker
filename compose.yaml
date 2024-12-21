@@ -5,6 +5,7 @@ include:
   # - sql/MongoDB/docker.yaml
   # - sql/redis/docker.yaml
   - openresty/docker.yaml
+  # - lskypro/docker.yaml
   # - nginx/docker.yaml
 
 

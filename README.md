@@ -22,3 +22,8 @@ docker compose up -d
 - docker compose 导入其他 docker 配置 https://docs.docker.com/compose/multiple-compose-files/include/
 
 - vuejs demo https://github.com/docker/awesome-compose/blob/master/vuejs/compose.yaml
+
+## 待办文档
+
+- elasticsearch https://www.elastic.co/cn/elasticsearch
+  - https://www.elastic.co/guide/en/elasticsearch/reference/8.15/docker.html#docker-compose-file
