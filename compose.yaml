@@ -1,13 +1,12 @@
-name: leaning-docker-compose
+# name: leaning-docker-compose
 
-include:
-  # - sql/mysql/docker.yaml
-  # - sql/MongoDB/docker.yaml
-  # - sql/redis/docker.yaml
-  - openresty/docker.yaml
-  # - lskypro/docker.yaml
-  # - nginx/docker.yaml
-
+# include:
+# - sql/mysql/docker.yaml
+# - sql/MongoDB/docker.yaml
+# - sql/redis/docker.yaml
+# - openresty/docker.yaml
+# - lskypro/docker.yaml
+# - nginx/docker.yaml
 
 # services:
 #   web:
@@ -16,3 +15,147 @@ include:
 #       # target: development
 #     ports:
 #       - 8080:80
+
+services:
+  # 核心日志系统 https://elasticsearch.bookhub.tech/set_up_elasticsearch/installing_elasticsearch/docker
+  # es:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+  #   environment:
+  #     - discovery.type=single-node
+  #     - ES_JAVA_OPTS=-Xms512m -Xmx512m
+  #     - xpack.security.enabled=false
+  #   volumes:
+  #     - esdata:/usr/share/elasticsearch/data
+  #   networks:
+  #     - app_net
+  #   healthcheck:
+  #     test: curl -f http://localhost:9200/_cluster/health || exit 1
+  #     # interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:8.12.0
+  #   environment:
+  #     - I18N_LOCALE=zh-CN
+  #     - SERVER_BASEPATH=/kibana
+  #     - ELASTICSEARCH_HOSTS=http://es:9200
+  #     - xpack.encryptedSavedObjects.encryptionKey=b17f93c5e3b25e1d57902d8a2d06bc31
+  #     - xpack.reporting.encryptionKey=5a6efaa00e1e9f1265bd031f3d5b2bcc
+  #     - xpack.security.encryptionKey=359b10c385841d5929c26fac7ce3f008
+  #   networks:
+  #     - app_net
+  #   depends_on:
+  #     es:
+  #       condition: service_healthy
+
+  # 反向代理网关
+  openresty:
+    image: openresty/openresty:alpine
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+      - ./frontend/dist:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app_net
+    depends_on:
+      # - frontend
+      # - kibana
+      # - chevereto
+      - koa-server
+
+  # 数据库集群
+  # mysql:
+  #   image: mysql:8.0
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #     MYSQL_DATABASE: chevereto
+  #   volumes:
+  #     - mysqldata:/var/lib/mysql
+  #   networks:
+  #     - app_net
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+
+  mongodb:
+    image: mongo:6.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - app_net
+
+  redis:
+    image: redis:7.0-alpine
+    command: redis-server --requirepass redispass
+    volumes:
+      - redisdata:/data
+    networks:
+      - app_net
+
+  # 图床服务
+  # chevereto:
+  #   image: linuxserver/chevereto
+  #   environment:
+  #     - DB_HOST=mysql
+  #     - DB_USER=root
+  #     - DB_PASS=rootpass
+  #     - DB_NAME=chevereto
+  #   networks:
+  #     - app_net
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+
+  # 应用服务
+  koa-server:
+    build: ./koa-server
+    volumes:
+      - ./koa-server:/app
+    environment:
+      - MONGODB_URI=mongodb://root:rootpass@mongodb:27017
+      - MYSQL_URI=mysql://root:rootpass@mysql:3306
+      - REDIS_URI=redis://default:redispass@redis:6379
+      - CHEVERETO_API=http://chevereto/api
+      - ELASTICSEARCH_HOSTS=http://es:9200
+      - JWT_SECRET=toor
+    networks:
+      - app_net
+    command: npm run start
+    depends_on:
+      - mongodb
+      # - mysql
+      - redis
+      # - es
+
+  # 前端服务（开发模式）
+  # frontend:
+  #   build: ./frontend
+  #   volumes:
+  #     - ./frontend:/app
+  #     - ./frontend/dist:/usr/share/nginx/html/frontend
+  #   networks:
+  #     - app_net
+  #   command: npm i && npm run build
+
+volumes:
+  esdata:
+  mysqldata:
+  mongodata:
+  redisdata:
+
+networks:
+  app_net:
+    driver: bridge
+# # 在需要日志收集的服务中添加：
+# logging:
+#   driver: "fluentd"
+#   options:
+#     fluentd-address: localhost:24224
+#     tag: "service_logs"
