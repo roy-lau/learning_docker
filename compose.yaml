@@ -135,14 +135,14 @@ services:
       # - es
 
   # 前端服务（开发模式）
-  # frontend:
-  #   build: ./frontend
-  #   volumes:
-  #     - ./frontend:/app
-  #     - ./frontend/dist:/usr/share/nginx/html/frontend
-  #   networks:
-  #     - app_net
-  #   command: npm i && npm run build
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - ./frontend/dist:/usr/share/nginx/html
+    # command: npm i && npm run build
+    networks:
+      - app_net
 
 volumes:
   esdata:

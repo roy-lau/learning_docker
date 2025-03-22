@@ -1,0 +1,11 @@
+{
+    "map": false,
+    "plugins": {
+        "postcss-px2viewport": {
+            "viewportWidth": 750,
+            "baseDpr": 2,
+            "isDeleteRem": true,
+            "isDeleteDpr": true
+        }
+    }
+}
